@@ -7,9 +7,12 @@ import { mockUsers, type MockUser } from '../mock/accounts'
 
 const REMEMBERED_USERNAME_KEY = 'smart_campus_remembered_username'
 
+const emit = defineEmits<{
+  login: [user: MockUser]
+}>()
+
 const loginFormRef = ref<FormInstance>()
 const loading = ref(false)
-const loggedInUser = ref<MockUser | null>(null)
 const rememberMe = ref(false)
 
 const loginForm = reactive({
@@ -51,8 +54,8 @@ const handleLogin = async () => {
         } else {
           localStorage.removeItem(REMEMBERED_USERNAME_KEY)
         }
-        loggedInUser.value = result.user
         ElMessage.success(result.message)
+        emit('login', result.user)
       } else {
         ElMessage.error(result.message)
       }
@@ -60,19 +63,11 @@ const handleLogin = async () => {
     }, 500)
   })
 }
-
-const handleLogout = () => {
-  loggedInUser.value = null
-  loginForm.password = ''
-  if (!rememberMe.value) {
-    loginForm.username = ''
-  }
-}
 </script>
 
 <template>
   <div class="login-container">
-    <div v-if="!loggedInUser" class="login-card">
+    <div class="login-card">
       <h1 class="system-title">智慧校园管理系统</h1>
       <h2 class="system-subtitle">Smart Campus Management System</h2>
 
@@ -135,28 +130,6 @@ const handleLogout = () => {
         />
       </div>
     </div>
-
-    <div v-else class="success-card">
-      <el-result icon="success" title="登录成功">
-        <template #sub-title>
-          <div class="user-info">
-            <p>
-              <span class="label">姓名：</span>
-              <span class="value">{{ loggedInUser.name }}</span>
-            </p>
-            <p>
-              <span class="label">角色：</span>
-              <el-tag :type="loggedInUser.role === 'admin' ? 'danger' : loggedInUser.role === 'teacher' ? 'warning' : 'success'">
-                {{ loggedInUser.roleLabel }}
-              </el-tag>
-            </p>
-          </div>
-        </template>
-        <template #extra>
-          <el-button type="primary" @click="handleLogout">退出登录</el-button>
-        </template>
-      </el-result>
-    </div>
   </div>
 </template>
 
@@ -172,14 +145,6 @@ const handleLogout = () => {
 .login-card {
   width: 420px;
   padding: 40px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-}
-
-.success-card {
-  width: 480px;
-  padding: 20px;
   background: #fff;
   border-radius: 12px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -221,27 +186,5 @@ const handleLogout = () => {
 
 .account-item :deep(.el-alert__content) {
   width: 100%;
-}
-
-.user-info {
-  text-align: left;
-  padding: 16px 24px;
-  background: #f5f7fa;
-  border-radius: 8px;
-}
-
-.user-info p {
-  margin: 8px 0;
-  font-size: 15px;
-}
-
-.user-info .label {
-  color: #606266;
-  font-weight: 500;
-}
-
-.user-info .value {
-  color: #303133;
-  font-weight: 600;
 }
 </style>
