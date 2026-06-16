@@ -5,6 +5,7 @@ import type { MockUser } from '../mock/accounts'
 import type { Announcement } from '../mock/announcements'
 import AnnouncementManage from './AnnouncementManage.vue'
 import MessageCenter from './MessageCenter.vue'
+import CourseManage from './CourseManage.vue'
 
 const props = defineProps<{
   user: MockUser
@@ -14,7 +15,7 @@ const emit = defineEmits<{
   logout: []
 }>()
 
-type PageName = 'message-center' | 'announcement-manage'
+type PageName = 'message-center' | 'announcement-manage' | 'course-manage'
 
 const currentPage = ref<PageName>('message-center')
 
@@ -74,6 +75,7 @@ const navItems = computed(() => {
   ]
   if (props.user.role === 'admin') {
     items.push({ key: 'announcement-manage', label: '公告管理' })
+    items.push({ key: 'course-manage', label: '课程管理' })
   }
   return items
 })
@@ -125,6 +127,7 @@ const handleLogout = () => {
     <main class="main-content">
       <MessageCenter v-if="currentPage === 'message-center'" :user="user" />
       <AnnouncementManage v-else-if="currentPage === 'announcement-manage'" />
+      <CourseManage v-else-if="currentPage === 'course-manage'" />
     </main>
   </div>
 </template>
