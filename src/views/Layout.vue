@@ -40,13 +40,15 @@ const deleteAnnouncement = (id: number) => {
 }
 
 const markAsRead = (id: number) => {
-  readIds.value.add(id)
+  readIds.value = new Set([...readIds.value, id])
 }
 
 const markAllAsRead = () => {
+  const newSet = new Set(readIds.value)
   announcements.value
     .filter((a) => a.targetRoles.includes(props.user.role))
-    .forEach((a) => readIds.value.add(a.id))
+    .forEach((a) => newSet.add(a.id))
+  readIds.value = newSet
 }
 
 const visibleAnnouncements = computed(() =>
