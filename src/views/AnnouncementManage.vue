@@ -132,7 +132,7 @@ const handleSubmit = async () => {
 
 const searchText = ref('')
 
-const categoryFilter = ref('')
+const categoryFilter = ref<AnnouncementCategory | ''>('')
 
 const tableData = ref<Announcement[]>([])
 

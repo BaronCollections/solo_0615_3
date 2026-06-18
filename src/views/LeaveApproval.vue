@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
-import { Search, Check, Close, Refresh } from '@element-plus/icons-vue'
+import { Search, Check, Close } from '@element-plus/icons-vue'
 import type { MockUser } from '../mock/accounts'
 import {
   mockLeaveRequests,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
-import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from 'element-plus'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { Plus, Search } from '@element-plus/icons-vue'
 import type { MockUser } from '../mock/accounts'
 import {
@@ -79,7 +79,7 @@ const computedDays = computed(() => {
   return diff
 })
 
-const validateDateRange = (rule: unknown, value: string, callback: (error?: Error) => void) => {
+const validateDateRange = (_rule: unknown, value: string, callback: (error?: Error) => void) => {
   if (!value) {
     callback(new Error('请选择日期'))
     return
@@ -195,14 +195,7 @@ const getStatusLabel = (status: LeaveStatus) => {
   return leaveStatusOptions.find((s) => s.value === status)?.label ?? status
 }
 
-const getStatusColor = (status: LeaveStatus) => {
-  const map: Record<LeaveStatus, string> = {
-    pending: '#e6a23c',
-    approved: '#67c23a',
-    rejected: '#f56c6c',
-  }
-  return map[status]
-}
+
 </script>
 
 <template>
