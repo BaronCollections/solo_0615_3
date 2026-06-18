@@ -1,5 +1,10 @@
 import type { Announcement, AnnouncementCategory } from '../mock/announcements'
 
+export function isExpired(a: Announcement): boolean {
+  if (!a.expireTime) return false
+  return new Date(a.expireTime).getTime() < Date.now()
+}
+
 export interface AnnouncementFilterOptions {
   category?: AnnouncementCategory | ''
   keyword?: string

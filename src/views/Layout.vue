@@ -3,6 +3,7 @@ import { ref, computed, provide } from 'vue'
 import { Bell, SwitchButton } from '@element-plus/icons-vue'
 import type { MockUser } from '../mock/accounts'
 import type { Announcement } from '../mock/announcements'
+import { isExpired } from '../utils/announcements'
 import AnnouncementManage from './AnnouncementManage.vue'
 import MessageCenter from './MessageCenter.vue'
 import CourseManage from './CourseManage.vue'
@@ -48,13 +49,13 @@ const markAsRead = (id: number) => {
 const markAllAsRead = () => {
   const newSet = new Set(readIds.value)
   announcements.value
-    .filter((a) => a.targetRoles.includes(props.user.role))
+    .filter((a) => a.targetRoles.includes(props.user.role) && !isExpired(a))
     .forEach((a) => newSet.add(a.id))
   readIds.value = newSet
 }
 
 const visibleAnnouncements = computed(() =>
-  announcements.value.filter((a) => a.targetRoles.includes(props.user.role))
+  announcements.value.filter((a) => a.targetRoles.includes(props.user.role) && !isExpired(a))
 )
 
 const unreadCount = computed(() => {

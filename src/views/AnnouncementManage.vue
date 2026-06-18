@@ -11,7 +11,7 @@ import {
   type AnnouncementCategory,
 } from '../mock/announcements'
 import type { UserRole } from '../mock/accounts'
-import { applyAnnouncementFilters, getCategoryTagType } from '../utils/announcements'
+import { applyAnnouncementFilters, getCategoryTagType, isExpired } from '../utils/announcements'
 
 const announcements = inject<Ref<Announcement[]>>('announcements')!
 const initAnnouncements = inject<(list: Announcement[]) => void>('initAnnouncements')!
@@ -35,6 +35,7 @@ const form = ref({
   category: '教务通知' as AnnouncementCategory,
   targetRoles: ['student', 'teacher'] as UserRole[],
   publishTime: '',
+  expireTime: '',
   isPinned: false,
   summary: '',
   content: '',
@@ -57,6 +58,7 @@ const resetForm = () => {
     category: '教务通知',
     targetRoles: ['student', 'teacher'],
     publishTime: '',
+    expireTime: '',
     isPinned: false,
     summary: '',
     content: '',
@@ -79,6 +81,7 @@ const handleEdit = (row: Announcement) => {
     category: row.category,
     targetRoles: [...row.targetRoles],
     publishTime: row.publishTime,
+    expireTime: row.expireTime,
     isPinned: row.isPinned,
     summary: row.summary,
     content: row.content,
@@ -213,6 +216,15 @@ const getRoleLabels = (roles: UserRole[]) =>
         </template>
       </el-table-column>
       <el-table-column prop="publishTime" label="发布时间" width="170" />
+      <el-table-column label="有效期至" width="170">
+        <template #default="{ row }">
+          <span v-if="row.expireTime">
+            {{ row.expireTime }}
+            <el-tag v-if="isExpired(row)" type="info" size="small" style="margin-left: 4px">已过期</el-tag>
+          </span>
+          <span v-else style="color: #c0c4cc">长期有效</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="author" label="发布者" width="100" />
       <el-table-column label="操作" width="160" align="center" fixed="right">
         <template #default="{ row }">
@@ -258,6 +270,17 @@ const getRoleLabels = (roles: UserRole[]) =>
             placeholder="选择发布时间"
             format="YYYY-MM-DD HH:mm:ss"
             value-format="YYYY-MM-DD HH:mm:ss"
+            style="width: 100%"
+          />
+        </el-form-item>
+        <el-form-item label="有效期至">
+          <el-date-picker
+            v-model="form.expireTime"
+            type="datetime"
+            placeholder="留空表示长期有效"
+            format="YYYY-MM-DD HH:mm:ss"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            clearable
             style="width: 100%"
           />
         </el-form-item>
