@@ -6,6 +6,8 @@ import type { Announcement } from '../mock/announcements'
 import AnnouncementManage from './AnnouncementManage.vue'
 import MessageCenter from './MessageCenter.vue'
 import CourseManage from './CourseManage.vue'
+import LeaveManage from './LeaveManage.vue'
+import LeaveApproval from './LeaveApproval.vue'
 
 const props = defineProps<{
   user: MockUser
@@ -15,7 +17,7 @@ const emit = defineEmits<{
   logout: []
 }>()
 
-type PageName = 'message-center' | 'announcement-manage' | 'course-manage'
+type PageName = 'message-center' | 'announcement-manage' | 'course-manage' | 'leave-manage' | 'leave-approval'
 
 const currentPage = ref<PageName>('message-center')
 
@@ -75,6 +77,12 @@ const navItems = computed(() => {
   const items: { key: PageName; label: string }[] = [
     { key: 'message-center', label: '消息中心' },
   ]
+  if (props.user.role === 'student') {
+    items.push({ key: 'leave-manage', label: '我的请假' })
+  }
+  if (props.user.role === 'teacher') {
+    items.push({ key: 'leave-approval', label: '请假审批' })
+  }
   if (props.user.role === 'admin') {
     items.push({ key: 'announcement-manage', label: '公告管理' })
     items.push({ key: 'course-manage', label: '课程管理' })
@@ -130,6 +138,8 @@ const handleLogout = () => {
       <MessageCenter v-if="currentPage === 'message-center'" :user="user" />
       <AnnouncementManage v-else-if="currentPage === 'announcement-manage'" />
       <CourseManage v-else-if="currentPage === 'course-manage'" />
+      <LeaveManage v-else-if="currentPage === 'leave-manage'" :user="user" />
+      <LeaveApproval v-else-if="currentPage === 'leave-approval'" :user="user" />
     </main>
   </div>
 </template>
