@@ -5,6 +5,31 @@ export function isExpired(a: Announcement): boolean {
   return new Date(a.expireTime).getTime() < Date.now()
 }
 
+export function isValidForDisplay(a: Announcement): boolean {
+  return !isExpired(a)
+}
+
+export interface ExpireLabelResult {
+  text: string
+  showExpiredTag: boolean
+  expiredTagText: string
+}
+
+export function getExpireLabel(a: Announcement): ExpireLabelResult {
+  if (!a.expireTime) {
+    return {
+      text: '长期有效',
+      showExpiredTag: false,
+      expiredTagText: '',
+    }
+  }
+  return {
+    text: a.expireTime,
+    showExpiredTag: isExpired(a),
+    expiredTagText: '已过期',
+  }
+}
+
 export interface AnnouncementFilterOptions {
   category?: AnnouncementCategory | ''
   keyword?: string

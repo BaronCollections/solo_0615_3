@@ -11,7 +11,7 @@ import {
   type AnnouncementCategory,
 } from '../mock/announcements'
 import type { UserRole } from '../mock/accounts'
-import { applyAnnouncementFilters, getCategoryTagType, isExpired } from '../utils/announcements'
+import { applyAnnouncementFilters, getCategoryTagType, getExpireLabel } from '../utils/announcements'
 
 const announcements = inject<Ref<Announcement[]>>('announcements')!
 const initAnnouncements = inject<(list: Announcement[]) => void>('initAnnouncements')!
@@ -219,10 +219,17 @@ const getRoleLabels = (roles: UserRole[]) =>
       <el-table-column label="有效期至" width="170">
         <template #default="{ row }">
           <span v-if="row.expireTime">
-            {{ row.expireTime }}
-            <el-tag v-if="isExpired(row)" type="info" size="small" style="margin-left: 4px">已过期</el-tag>
+            {{ getExpireLabel(row).text }}
+            <el-tag
+              v-if="getExpireLabel(row).showExpiredTag"
+              type="info"
+              size="small"
+              style="margin-left: 4px"
+            >
+              {{ getExpireLabel(row).expiredTagText }}
+            </el-tag>
           </span>
-          <span v-else style="color: #c0c4cc">长期有效</span>
+          <span v-else style="color: #c0c4cc">{{ getExpireLabel(row).text }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="author" label="发布者" width="100" />

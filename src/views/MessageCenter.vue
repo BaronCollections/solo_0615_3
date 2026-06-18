@@ -4,7 +4,7 @@ import { Search, Check, Top } from '@element-plus/icons-vue'
 import { mockAnnouncements, announcementCategories, type Announcement, type AnnouncementCategory } from '../mock/announcements'
 import type { MockUser, UserRole } from '../mock/accounts'
 import { roleOptions } from '../mock/announcements'
-import { applyAnnouncementFilters, getCategoryTagType, isExpired } from '../utils/announcements'
+import { applyAnnouncementFilters, getCategoryTagType, isValidForDisplay } from '../utils/announcements'
 
 const props = defineProps<{
   user: MockUser
@@ -27,7 +27,7 @@ const drawerVisible = ref(false)
 const selectedAnnouncement = ref<Announcement | null>(null)
 
 const visibleToMe = computed(() =>
-  announcements.value.filter((a: Announcement) => a.targetRoles.includes(props.user.role) && !isExpired(a))
+  announcements.value.filter((a: Announcement) => a.targetRoles.includes(props.user.role) && isValidForDisplay(a))
 )
 
 const filteredList = computed(() =>
