@@ -72,7 +72,7 @@ const resetForm = () => {
   }
 }
 
-const validateNameUnique = (rule: unknown, value: string, callback: (error?: Error) => void) => {
+const validateNameUnique = (_rule: unknown, value: string, callback: (error?: Error) => void) => {
   if (!value) {
     callback(new Error('请输入课程名称'))
     return
