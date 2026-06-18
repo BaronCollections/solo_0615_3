@@ -4,6 +4,7 @@ import { Search, Check, Top } from '@element-plus/icons-vue'
 import { mockAnnouncements, announcementCategories, type Announcement, type AnnouncementCategory } from '../mock/announcements'
 import type { MockUser, UserRole } from '../mock/accounts'
 import { roleOptions } from '../mock/announcements'
+import { applyAnnouncementFilters, getCategoryTagType } from '../utils/announcements'
 
 const props = defineProps<{
   user: MockUser
@@ -29,32 +30,14 @@ const visibleToMe = computed(() =>
   announcements.value.filter((a: Announcement) => a.targetRoles.includes(props.user.role))
 )
 
-const filteredList = computed(() => {
-  let list = [...visibleToMe.value]
-
-  if (categoryFilter.value) {
-    list = list.filter((a) => a.category === categoryFilter.value)
-  }
-
-  if (showUnreadOnly.value) {
-    list = list.filter((a) => !isRead(a.id))
-  }
-
-  if (searchText.value) {
-    const kw = searchText.value.toLowerCase()
-    list = list.filter(
-      (a) =>
-        a.title.toLowerCase().includes(kw) || a.summary.toLowerCase().includes(kw)
-    )
-  }
-
-  list.sort((a, b) => {
-    if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1
-    return b.publishTime.localeCompare(a.publishTime)
+const filteredList = computed(() =>
+  applyAnnouncementFilters(visibleToMe.value, {
+    category: categoryFilter.value,
+    keyword: searchText.value,
+    showUnreadOnly: showUnreadOnly.value,
+    isRead,
   })
-
-  return list
-})
+)
 
 const unreadCount = computed(() => visibleToMe.value.filter((a: Announcement) => !isRead(a.id)).length)
 
@@ -68,17 +51,6 @@ const handleOpenDetail = (item: Announcement) => {
 
 const handleMarkAllRead = () => {
   markAllAsRead()
-}
-
-const getCategoryTagType = (cat: AnnouncementCategory) => {
-  const map: Record<string, string> = {
-    教务通知: '',
-    学务公告: 'success',
-    后勤服务: 'warning',
-    校园活动: 'danger',
-    系统通知: 'info',
-  }
-  return (map[cat] ?? '') as '' | 'success' | 'warning' | 'danger' | 'info'
 }
 
 const getRoleLabels = (roles: UserRole[]) =>

@@ -11,6 +11,7 @@ import {
   type AnnouncementCategory,
 } from '../mock/announcements'
 import type { UserRole } from '../mock/accounts'
+import { applyAnnouncementFilters, getCategoryTagType } from '../utils/announcements'
 
 const announcements = inject<Ref<Announcement[]>>('announcements')!
 const initAnnouncements = inject<(list: Announcement[]) => void>('initAnnouncements')!
@@ -136,22 +137,10 @@ const categoryFilter = ref('')
 const tableData = ref<Announcement[]>([])
 
 const applyFilters = () => {
-  let list = [...announcements.value]
-  if (categoryFilter.value) {
-    list = list.filter((a) => a.category === categoryFilter.value)
-  }
-  if (searchText.value) {
-    const kw = searchText.value.toLowerCase()
-    list = list.filter(
-      (a) =>
-        a.title.toLowerCase().includes(kw) || a.summary.toLowerCase().includes(kw)
-    )
-  }
-  list.sort((a, b) => {
-    if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1
-    return b.publishTime.localeCompare(a.publishTime)
+  tableData.value = applyAnnouncementFilters(announcements.value, {
+    category: categoryFilter.value,
+    keyword: searchText.value,
   })
-  tableData.value = list
 }
 
 watch(
@@ -162,17 +151,6 @@ watch(
 
 const getRoleLabels = (roles: UserRole[]) =>
   roles.map((r) => roleOptions.find((o) => o.value === r)?.label ?? r).join('、')
-
-const getCategoryTagType = (cat: AnnouncementCategory) => {
-  const map: Record<string, string> = {
-    教务通知: '',
-    学务公告: 'success',
-    后勤服务: 'warning',
-    校园活动: 'danger',
-    系统通知: 'info',
-  }
-  return (map[cat] ?? '') as '' | 'success' | 'warning' | 'danger' | 'info'
-}
 </script>
 
 <template>
